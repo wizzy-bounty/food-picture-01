@@ -81,6 +81,15 @@ function jpegDimensions(bytes: Buffer): { width: number; height: number } {
   throw new Error("entry.png is a malformed JPEG (no start-of-frame found)");
 }
 
+function assertWithinLimits(dimensions: { width: number; height: number }): void {
+  if (dimensions.width > MAX_WIDTH || dimensions.height > MAX_HEIGHT) {
+    throw new Error(
+      `entry.png is ${dimensions.width}x${dimensions.height}, over the ` +
+        `${MAX_WIDTH}x${MAX_HEIGHT} pixel limit`
+    );
+  }
+}
+
 function validateImage(
   bytes: Buffer,
   size: number
@@ -105,12 +114,7 @@ function validateImage(
     );
   }
 
-  if (dimensions.width > MAX_WIDTH || dimensions.height > MAX_HEIGHT) {
-    throw new Error(
-      `entry.png is ${dimensions.width}x${dimensions.height}, over the ` +
-        `${MAX_WIDTH}x${MAX_HEIGHT} pixel limit`
-    );
-  }
+  assertWithinLimits(dimensions);
 
   return { format, width: dimensions.width, height: dimensions.height };
 }
